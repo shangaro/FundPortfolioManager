@@ -7,6 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.S3;
+using FundPortfolioManager.Models;
+using DocumentProcessor;
+using FundPortfolioManager.Services;
+using FundPortfolioManager.Data;
 
 namespace FundPortfolioManager
 {
@@ -23,6 +28,12 @@ namespace FundPortfolioManager
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddOptions();
+            services.Configure<AwsBucketConfig>(Configuration.GetSection("AWSBucket"));
+            services.Configure<PDFReactorConfig>(Configuration.GetSection("PDFReactor"));
+            services.AddAWSService<IAmazonS3>(Configuration.GetAWSOptions());
+            services.AddSingleton<IBucketRepository, BucketRepository>();
+            services.AddScoped<IPdfProcessor, PdfProcessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
