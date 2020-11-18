@@ -48,5 +48,9 @@ namespace FundPortfolioManager.Controllers
 
             return RedirectToAction("UploadComplete");
         }
+        public IActionResult UploadComplete()
+        {
+            return View();
+        }
     }
 }
