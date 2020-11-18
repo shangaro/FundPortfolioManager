@@ -32,7 +32,7 @@ namespace Microsoft.Extensions.Messaging.RabbitMQ.Internal
                                  });
         }
 
-        public async Task DeliverAsync(ulong deliveryTag, string routingKey, byte[] body)
+        public async Task DeliverAsync(ulong deliveryTag, string routingKey, ReadOnlyMemory<byte> body)
         {
             if (!_builder.Subscriptions.TryGetValue(routingKey, out var subscription))
             {
@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.Messaging.RabbitMQ.Internal
             try
             {
                 // REVIEW: Should we introduce a timeout cancellation token?
-                success = await subscription.DispatchAsync(Encoding.UTF8.GetString(body), CancellationToken.None);
+                success = await subscription.DispatchAsync(Encoding.UTF8.GetString(body.ToArray()), CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -72,15 +72,7 @@ namespace Microsoft.Extensions.Messaging.RabbitMQ.Internal
                 }
             });
         }
-
-        public override async void HandleBasicDeliver(
-            string consumerTag,
-            ulong deliveryTag,
-            bool redelivered,
-            string exchange,
-            string routingKey,
-            IBasicProperties properties,
-            byte[] body)
+        public override async void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, ReadOnlyMemory<byte> body)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -89,5 +81,6 @@ namespace Microsoft.Extensions.Messaging.RabbitMQ.Internal
 
             await DeliverAsync(deliveryTag, routingKey, body);
         }
+       
     }
 }
