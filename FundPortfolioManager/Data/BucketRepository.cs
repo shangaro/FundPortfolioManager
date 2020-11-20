@@ -27,6 +27,13 @@ namespace FundPortfolioManager.Data
             transferUtility = new TransferUtility(_s3Client);
         }
 
+        public void Dispose()
+        {
+            transferUtility.Dispose();
+            
+        }
+        
+
         public async Task<bool> TryCreateBucket(string bucketName,CancellationToken cancellationToken)
         {
             bool bucketExist= await _s3Client.DoesS3BucketExistAsync(bucketName);
@@ -48,7 +55,7 @@ namespace FundPortfolioManager.Data
                     .WithDegreeOfParallelism(5).Select(file =>
                     {
                        
-                        var request = new TransferUtilityUploadRequest { BucketName = bucketName, InputStream = file.blob, Key = file.Name };
+                        var request = new TransferUtilityUploadRequest { BucketName = bucketName, InputStream = file.blob, Key = file.Name,AutoCloseStream=true };
                         return transferUtility.UploadAsync(request, cancellationToken);
 
                     });
