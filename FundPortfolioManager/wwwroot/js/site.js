@@ -5,6 +5,7 @@
 // Write your JavaScript code.
 $(document).ready(function () {
 
+    getFiles();
     var progressbarContainer = $(".progress-bar-container");
     progressbarContainer.hide();
     var progressbarStick = $("#progress-bar-stick"),
@@ -19,16 +20,16 @@ $(document).ready(function () {
         }
     });
 
-    function progress() {
+    //function progress() {
 
-        var val = progressbarStick.progressbar("value") || 0;
-        progressbarStick.progressbar("value", val + 2);
+    //    var val = progressbarStick.progressbar("value") || 0;
+    //    progressbarStick.progressbar("value", val + 2);
 
-        if (val < 99) {
-            setTimeout(progress, 80);
-        }
+    //    if (val < 99) {
+    //        setTimeout(progress, 80);
+    //    }
         
-    }
+    //}
     //setTimeout(progress, 2000);
 
     var fileCount = 0;
@@ -62,11 +63,32 @@ $(document).ready(function () {
                     //var data = JSON.parse(JSON.stringify(json));
                     console.log("**data is", json);
                     progressbarStick.progressbar("value", 100);
+                    var pdfTable = $("#pdfTable").DataTable();
+                    $.ajax(
+                        {
+                            type: 'POST',
+                            data: $("#pdfTable").serialize(),
+                            contentType: "application/x-www-form-urlencoded",
+                            cache: false,
+                            url: "/File/GetFiles",
+                            success: function (msg) {
+                                console.log("**returned from server", msg);
+                                pdfTable.clear();
+                                pdfTable.rows.add(msg);
+                            },
+                            error: function (err) {
+                                return err.statusText;
+                            }
+
+                        });
+                    
+                   
                 }
                 
 
             });
-            var intervalId = setInterval(_ => {
+            var intervalId = setInterval(_ =>
+            {
                 let val = progressbarStick.progressbar("value") || 0;
                 progressbarStick.progressbar("value", val + 2);
                 console.log("*val", val);
@@ -74,17 +96,11 @@ $(document).ready(function () {
                     
                     clearInterval(intervalId);
                     setTimeout(_ => {
-                        uploadBtn.removeAttr("disabled");
                         progressbarStick.progressbar("value", 0);
+                        uploadBtn.removeAttr("disabled");  
                         progressbarContainer.hide();
-
-
-                    }, 1000);
-                    
-
-                    
-                }
-                
+                    }, 2000);
+                } 
             }, 250);
             
            
@@ -98,3 +114,5 @@ $(document).ready(function () {
 
     
 });
+
+

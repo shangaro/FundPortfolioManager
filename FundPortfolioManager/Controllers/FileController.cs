@@ -78,7 +78,7 @@ namespace FundPortfolioManager.Controllers
         {
             try
             {
-                string filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "Data", "testData.json");
+               
 
                 //Initialization
                 form.TryGetValue("search[value]",out var searches);
@@ -95,21 +95,20 @@ namespace FundPortfolioManager.Controllers
                 int startRec = startRecs.Count==0 ? 0: Convert.ToInt32(startRecs[0]);
                 int pageSize = pageSizes.Count==0 ? 10: Convert.ToInt32(pageSizes[0]);
 
-                //Deserialize Data
-                var jsonStaffs = await System.IO.File.ReadAllTextAsync(filePath, cancellationToken);
-                var staffs = JsonConvert.DeserializeObject<IEnumerable<Staff>>(jsonStaffs);
+               
+                var files = await _bucketRepository.GetFilesAsync(_awsSetting.BucketName, cancellationToken);
+               
 
                 // Total record count
-                var totalRecords = staffs.Count();
+                var totalRecords = files.Count();
                 if (!string.IsNullOrEmpty(search) && !string.IsNullOrWhiteSpace(search))
                 {
-                    staffs = staffs.Where(p => p.Name.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
-                      p.Id.ToString().Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
-                      p.Office.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
-                      p.Position.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
-                      p.Salary.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
-                      p.StartDate.ToShortDateString().Contains(searches[0], StringComparison.OrdinalIgnoreCase))
-                        .ToList();
+                    files = files.Where(p => p.Name.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
+                      p.Guid.Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
+                      p.Status.ToString().Contains(searches[0], StringComparison.OrdinalIgnoreCase) ||
+                      p.ETag.Contains(searches[0], StringComparison.OrdinalIgnoreCase))
+                       .ToList();
+                     
 
                    
                 }
@@ -118,51 +117,40 @@ namespace FundPortfolioManager.Controllers
                 switch (order, orderDir)
                 {
                     case ("0", "asc"):
-                        staffs = staffs.OrderBy(x => x.Name).ToList();
+                        files = files.OrderBy(x => x.Guid).ToList();
                         break;
                     case ("0", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.Name).ToList();
+                        files = files.OrderByDescending(x => x.Guid).ToList();
                         break;
                     case ("1", "asc"):
-                        staffs = staffs.OrderBy(x => x.Position).ToList();
+                        files = files.OrderBy(x => x.Name).ToList();
                         break;
                     case ("1", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.Position).ToList();
+                        files = files.OrderByDescending(x => x.Name).ToList();
                         break;
                     case ("2", "asc"):
-                        staffs = staffs.OrderBy(x => x.Office).ToList();
+                        files = files.OrderBy(x => x.Status).ToList();
                         break;
                     case ("2", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.Office).ToList();
+                        files = files.OrderByDescending(x => x.Status).ToList();
                         break;
                     case ("3", "asc"):
-                        staffs = staffs.OrderBy(x => x.Extn).ToList();
+                        files = files.OrderBy(x => x.ETag).ToList();
                         break;
                     case ("3", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.Extn).ToList();
+                        files = files.OrderByDescending(x => x.ETag).ToList();
                         break;
-                    case ("4", "asc"):
-                        staffs = staffs.OrderBy(x => x.StartDate).ToList();
-                        break;
-                    case ("4", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.StartDate).ToList();
-                        break;
-                    case ("5", "asc"):
-                        staffs = staffs.OrderBy(x => x.Salary).ToList();
-                        break;
-                    case ("5", "desc"):
-                        staffs = staffs.OrderByDescending(x => x.Salary).ToList();
-                        break;
+                  
 
                 }
 
                 // Filter record count
-                int recFilter = staffs.Count();
+                int recFilter = files.Count();
                 //apply pagination
-                staffs = staffs.Skip(startRec).Take(pageSize).ToList();
+                files = files.Skip(startRec).Take(pageSize).ToList();
                 
                 
-                return Ok(new { draw=draw, recordsTotal = totalRecords, recordsFiltered = recFilter, data = staffs });
+                return Ok(new { draw=draw, recordsTotal = totalRecords, recordsFiltered = recFilter, data = files });
             }
             catch(Exception ex)
             {
@@ -173,10 +161,5 @@ namespace FundPortfolioManager.Controllers
 
         }
         
-    }
-
-    internal class Person
-    {
-        public string Name { get; set; }
     }
 }
