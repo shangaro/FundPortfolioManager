@@ -21,9 +21,11 @@ namespace FundPortfolioManager.Models
              foreach(var item in items)
             {
                 await item.blob.DisposeAsync();
+                item.blob.Close();
             }
             
         }
+        
 
         public void Clear()
         {
