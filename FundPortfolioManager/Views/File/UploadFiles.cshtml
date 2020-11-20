@@ -1,24 +1,119 @@
-﻿@{ 
+﻿@{
 
     ViewData["Title"] = "Upload Files";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<div class="row">
-    <section>
-        <form method="post" enctype="multipart/form-data" asp-controller="File" asp-action="FileUploads">
-            <div class="form-group">
-                <div class="col-md-10">
-                    <p>Upload a score HTML file using this form:</p>
-                    <input type="file" id="file" name="file" multiple/>
+<section>
+    <div class="row">
+        <div class="col-md-4">
+            <form method="post" enctype="multipart/form-data" id="upload-form">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <p>Upload a score HTML file using this form:</p>
+                        <input type="file" id="upload-file" name="file" multiple />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-10">
-                    <input type="submit" value="Upload" />
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <input type="submit" id="upload-button" class="ui-button" value="Upload" />
+                    </div>
                 </div>
+            </form>
+        </div>
+        <div class="col-md-8 progress-bar-container">
+            <div id="progress-bar-stick"></div>
+            <div class="progress-bar-label">Loading ..</div>
+        </div>
+    </div>
+</section>
+
+@*Data Table*@
+<section>
+    <div class="well bs-component">
+        <div class="row">
+            <div class="col-md-12 col-md-push-0">
+                <table id="pdfTable" class="display table table-striped table-bordered table-hover" cellspacing="0" align="center" width:"100%">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Office</th>
+                            <th>Extn.</th>
+                            <th>Start date</th>
+                            <th>Salary</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Office</th>
+                            <th>Extn.</th>
+                            <th>Start date</th>
+                            <th>Salary</th>
+                        </tr>
+                    </tfoot>
+                </table>
+
             </div>
-        </form>
-    </section>
-</div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts{
+    <script>
+
+        $(document).ready(function () {
+            var form = $("#pdfTable").serialize();
+
+            $('#pdfTable').DataTable({
+                columnDefs: [
+                    { "width": "5%", "targets": [0] },
+                    { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4, 5] },
+
+
+                ],
+                language:
+                {
+                    processing: "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+                processing: true,
+                serverSide: true,
+                ajax: {
+
+                    url: "/File/GetFiles",
+                    type: "POST",
+                    dataType: "JSON",
+                    contentType: "application/x-www-form-urlencoded",
+                    data: form,
+                    //dataSrc: function (json) {
+                    //    //debugger;
+                    //    console.log(json);
+                    //    if (json.result == "Error") {
+                    //        alert(data.message);
+                    //    }
+                    //    //let jsonObj = $.parseJSON(JSON.stringify(json));
+                    //    //data
+
+                    //    return json;
+                    //}
+                },
+                columns: [
+                    { data: "name" },
+                    { data: "position" },
+                    { data: "office" },
+                    { data: "extn" },
+                    { data: "startDate" },
+                    { data: "salary" },
+                ]
+
+
+            });
+        });
+    </script>
+
+    
+}

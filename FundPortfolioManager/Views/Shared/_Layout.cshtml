@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FundPortfolioManager</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link  rel="stylesheet" href="~/css/datatables.min.css"/>
+    <link href="~/lib/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/js/DataTables-1.10.22/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
@@ -40,9 +43,12 @@
             &copy; 2020 - FundPortfolioManager - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    <script src="~/lib/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+    <script src="~/lib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/datatables.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
