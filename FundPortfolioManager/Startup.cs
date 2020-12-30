@@ -12,6 +12,8 @@ using FundPortfolioManager.Models;
 using DocumentProcessor;
 using FundPortfolioManager.Services;
 using FundPortfolioManager.Data;
+using FundPortfolioManager.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace FundPortfolioManager
 {
@@ -27,6 +29,12 @@ namespace FundPortfolioManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // add sql support
+            services.AddDbContext<SalesDbContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("SalesSqlConnectionString"));
+            });
+
             services.AddControllersWithViews();
             services.AddOptions();
             services.Configure<AwsBucketConfig>(Configuration.GetSection("AWSBucket"));
@@ -34,10 +42,14 @@ namespace FundPortfolioManager
             services.AddAWSService<IAmazonS3>(Configuration.GetAWSOptions());
             services.AddSingleton<IBucketRepository, BucketRepository>();
             services.AddScoped<IPdfProcessor, PdfProcessor>();
+
+            // sales database seeder
+            services.AddTransient<SalesDbSeeder>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,SalesDbSeeder salesDbSeeder)
         {
             if (env.IsDevelopment())
             {
@@ -59,6 +71,9 @@ namespace FundPortfolioManager
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            //seed sales database
+            salesDbSeeder.SeedDataAsync(app.ApplicationServices).Wait();
         }
     }
 }
