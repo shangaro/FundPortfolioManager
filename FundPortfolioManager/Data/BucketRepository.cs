@@ -76,14 +76,27 @@ namespace FundPortfolioManager.Data
 
         public async Task<bool> TryCreateBucket(string bucketName,CancellationToken cancellationToken)
         {
-            bool bucketExist= await _s3Client.DoesS3BucketExistAsync(bucketName);
-            if (!bucketExist)
+            try
             {
-                var request = new PutBucketRequest { BucketName = bucketName };
-                var response= await _s3Client.PutBucketAsync(request, cancellationToken);
-                return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                bool bucketExist = await _s3Client.DoesS3BucketExistAsync(bucketName);
+                if (!bucketExist)
+                {
+                    var request = new PutBucketRequest { BucketName = bucketName };
+                    var response = await _s3Client.PutBucketAsync(request, cancellationToken);
+                    return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
+                }
+                return bucketExist;
             }
-            return bucketExist;
+            catch(AmazonS3Exception amazonS3Exception)
+            {
+                _logger.LogError("S3 error occured. Exception:", amazonS3Exception.ToString());
+                throw;
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.InnerException, e.Message);
+                throw;
+            }
         }
 
         public async Task UploadFiles(string bucketName, StreamConcurrentCollection files, CancellationToken cancellationToken)
