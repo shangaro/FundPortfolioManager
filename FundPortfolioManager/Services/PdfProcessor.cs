@@ -63,27 +63,6 @@ namespace FundPortfolioManager.Services
             var filesToUpload = await Task.WhenAll(tasks);
            
             
-            
-            //var filesToUpload = new List<UploadFile>();
-            
-
-            //foreach(var file in filesToConvert)
-            //{
-            //    using var fs = File.Create(Path.Combine(tmpDir, file.FileName));
-
-            //}
-
-            //foreach(var file in filesToConvert)
-            //{
-            //    var filePath = Path.Combine(tmpDir, file.FileName);
-            //    await using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Write);
-            //    await file.CopyToAsync(fileStream);
-            //    var closed = fileStream.SafeFileHandle.IsClosed;
-            //    var absUri = new Uri(filePath).AbsoluteUri;
-            //    var bytes=await converter.Convert(absUri);
-            //    filesToUpload.Add(new UploadFile { Name = Path.ChangeExtension(file.FileName,".pdf"), blob = new MemoryStream(bytes) });
-
-            //}
             stopWatch.Stop();
             _logger.LogInformation($"took {stopWatch.ElapsedMilliseconds/1000} sec");
             // delete the directory

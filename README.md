@@ -10,6 +10,10 @@ A sample project that showcases high level financial concepts of portfolio gener
     * Asp .Net Core
     * DevExpress for Asp.Net Core non-commercial license
 ## Development
+  ### EF core migrations using Package Manager Console
+	* Install-Package Microsoft.EntityFrameworkCore.Tools
+	* Update-Package Microsoft.EntityFrameworkCore.Tools
+	* Get-Help about_EntityFrameworkCore
   ### Implementation of TPL Library:PLINQ
   ### Implementation of RabbitMQ as pub-sub pattern
   ### Implementation of Background Service and Thread Channel
@@ -26,3 +30,4 @@ A sample project that showcases high level financial concepts of portfolio gener
 ## Deployment in Prod
  ### azure kubernetes
  ### amazon ecs,ecs cluster,ecs task definition
+
